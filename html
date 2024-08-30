@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS System</title>
+</head>
+<body>
+    <h1>POS System</h1>
+    <div id="inventory"></div>
+    <div id="sale">
+        <h2>Checkout</h2>
+        <button onclick="checkout()">Complete Sale</button>
+        <p id="total"></p>
+    </div>
+
+    <script>
+        async function fetchInventory() {
+            const response = await fetch('/api/inventory');
+            const inventory = await response.json();
+            const inventoryDiv = document.getElementById('inventory');
+            inventoryDiv.innerHTML = '<h2>Inventory</h2>';
+            for (const id in inventory) {
+                const item = inventory[id];
+                inventoryDiv.innerHTML += `<p>${item.name}: $${item.price}</p>`;
+            }
+        }
+
+        async function checkout() {
+            const items = [
+                { id: 'item1', quantity: 2 },
+                { id: 'item2', quantity: 1 }
+            ];
+
+            const response = await fetch('/api/sale', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ items })
+            });
+            const result = await response.json();
+            document.getElementById('total').textContent = `Total: $${result.total}`;
+        }
+
+        fetchInventory();
+    </script>
+</body>
+</html>
